@@ -4,3 +4,13 @@
 .Ruserdata
 inst/doc
 
+
+*.pdf
+
+*.aux
+
+*.log
+
+*.gz
+
+*.tex
