@@ -1,0 +1,25 @@
+\documentclass{article}
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+\author{
+  Akashoro, Temitope\      \texttt{101020193}
+  \and
+  McNeil, Scott\      \texttt{100744314}
+}
+
+\title{ECON 5029-W: Research Question}
+
+\maketitle
+
+\section{Statement of Objective}
+
+\section{Motivation}
+
+\section{Expected Contributions}
+
+\section{Data}
+
+
+\end{document}
