@@ -1,11 +1,10 @@
 Package: ECON5029
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Research Project for ECON 5029-W 2017
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Temitope Akashoro and Scott McNeil
+Maintainer: Scott McNeil <scott.mcneil@carleton.ca>
+Description: This is our project for ECON 5029-W 2017 at Carleton University, where we use natutral language proccessing to analyze the effect of forward guidance on market expectations.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
