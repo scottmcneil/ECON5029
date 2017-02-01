@@ -15,11 +15,25 @@
 
 \section{Statement of Objective}
 
+The objective for this project is to examine forward guidance by the U.S. Federal Reserve Bank. Specifically: do the statements released by the Federal Open Market Committee contain information that the market might not have learned otherwise?
+
 \section{Motivation}
+
+Eight times a year, the Federal Open Market Committee (FOMC) of the U.S. Federal Reserve Bank system convenes. The group assesses both the global and U.S. economies and make a decision on the central bank's monetary policy for the next period. At the end of each meeting, the FOMC releases a carefully-crafted statement about the committee's outlook on the economy and plans for future policy. In the words of the Wall Street Journal, \textquotedblleft pundits and traders parse the changes between statements closely to see how policy makers' views are evolving.\textquotedblright This especially true during eight year period between December 16, 2008 and December 14, 2016, when the FOMC maintained a constant federal funds target rate of 0 to 1/4\%. With the policy makers effectively unable to lower rates further, these statements became a primary tool for affecting market expectations and outcomes.
+
+Many contributions to the literature have attempted to assess the impact of these statements by monitoring the change in federal fund rate futures in a close window around the announcement. This includes  However, we propose to asses the contents of the statements directly, relying on advancements over the past few years from the field of natural language processing. Our work would draw specifically on Le and Mikolov (2014), who propose an effective method for projecting the semantics of a document into a vector space.
+
+We also feel we can draw on the macroeconomics literature for factor-augmented vector auto-regression (FAVAR) to analyze the interaction between the real economy, federal funds expectations and the FOMC statements. In particular, we will rely on work from Bernanke, Boivin and Eliasz (2005) and Stock and Watson (2002) to collapse information about to real economy into one or two representative series to be used in a standard VAR model.
+
+We would like to test two key things. First, can natural language processing tools be used with the FOMC statements to explain changes in expectations about the future of monetary policy? Second, do these statements provide any information beyond what is available in other key economic indicators?
 
 \section{Expected Contributions}
 
+We feel there are two potential contributions from this literature. First, we could provide a better understanding of the impact of forward guidance and its ability to influence market expectations. Second, if our use of natural language processing is successful, it may provide a new tool for analyzing documents and text in an economic context.
+
 \section{Data}
+
+We propose to rely on three separate data sets, all of which are available either publicly or via Carleton resources. The first is the FOMC statements. Statements from 2012 onwards are available on the Federal Reserve website, while statements from 2007 onwards are available via the Wall Street Journal's website. The second is a time series of federal fund rate futures, which are available on a daily basis from a number of public sources. Finally, we will rely on a group of economic indicator time series, drawing particularly on the list used by Bernanke, Boivin and Eliasz (2005). All of these data sets are available either publicly or via Carleton resources, such as the library's Bloomberg terminals.
 
 
 \end{document}
