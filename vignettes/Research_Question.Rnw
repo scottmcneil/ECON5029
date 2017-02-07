@@ -36,6 +36,12 @@ We believe there are two potential contributions we can add to this literature.
 2. If our use of natural language processing is successful, it may provide a new tool for analyzing documents and text in an economic context.
 
 \section{Data}
+\nocite{gurkaynak2005actions}
+\nocite{campbell2012macroeconomic}
+\nocite{le2014distributed}
+
+\bibliographystyle{plain}
+\bibliography{references}
 
 We propose to rely on three separate data sets, all of which are available either publicly or via Carleton resources. The first is the FOMC statements. Statements from 2012 onwards are available on the Federal Reserve website, while statements from 2007 onwards are available via the Wall Street Journal's website. The second is a time series of federal fund rate futures, which are available on a daily basis from a number of public sources. Finally, we will rely on a group of economic indicator time series, drawing particularly on the list used by Bernanke, Boivin and Eliasz (2005). All of these data sets are available either publicly or via Carleton resources, such as the library's Bloomberg terminals.
 
