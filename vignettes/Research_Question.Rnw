@@ -18,11 +18,11 @@
 
 \section{Statement of Objective}
 
-The objective for this project is to examine forward guidance by the U.S. Federal Reserve Bank and how public statements can affect market expectations. Specifically: do statements released by the Federal Open Market Committee contain information that the market might not have learned otherwise?
+The objective for this project is to examine forward guidance by the U.S. Federal Reserve Bank and how public statements can affect market expectations. Specifically: do statements released by the Federal Open Market Committee (FOMC) contain information that the market might not have learned otherwise?
 
 \section{Motivation}
 
-During eight year period between December 16, 2008 and December 14, 2016, the U.S. Federal Reserve maintained a constant federal funds target rate of 0 to 0.25\%. With policy makers effectively unable to lower rates further, public statements became a primary tool for affecting market expectations and outcomes.
+During eight year period between December 16, 2008 and December 14, 2016, the U.S. Federal Reserve maintained a constant federal funds target rate of 0 to 0.25\%. With policy makers effectively unable to lower rates further, the public FOMC statements became a primary tool for affecting market expectations and outcomes.
 
 Previous contributions to the literature, such as Gurkaynak, Sack and Swanson (2005) and Campbell, Evans, Fisher and Justiniano (2012), have assessed the impact of these statements by monitoring federal fund rate futures as a proxy. We propose to asses the contents of the statements directly, using advancements from the field of natural language processing, specifically Le and Mikolov (2014), who propose a method for capturing the semantic meaning of documents in a vector space. We would like to explore the relationship between this semantic data and measures of market expectations, such as the federal fund rate futures.
 
