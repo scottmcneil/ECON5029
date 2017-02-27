@@ -1,0 +1,112 @@
+\documentclass{beamer}
+\mode<presentation>
+{
+  \usetheme{default}      
+  \usecolortheme{default} 
+  \usefonttheme{default}  
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage[font=scriptsize,labelfont=scriptsize]{caption}
+\usetheme{metropolis}
+
+\title{fed2vec: a machine learning approach to forward guidance and market expectations}
+\author{Temitope Akashoro\\
+		Scott McNeil}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}{Motivation: FOMC and Forward Guidance}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{itemize}
+			\item FOMC releases statements after meetings, detailing future policy
+			\item Previous research (Campbell et al. 2012, Gurkaynak et al. 2005) study federal fund futures (FFF) as proxy
+			\item Can we study these statements directly?
+		\end{itemize}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{figure}
+			\includegraphics[width=1.05\textwidth]{fomcstatement.png}
+			\caption{The \emph{Wall Street Journal's} \textquotedblleft Fed Statement Tracker\textquotedblright}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{word2vec and doc2vec}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{itemize}
+			\item Mikolov, et. al. (2013) and Le and Mikolov (2014) present word and document \textquotedblleft vectorization\textquotedblright
+			\item Learn representation via word co-occurrence
+			\item Vectors (and distances between vectors) encode semantics
+		\end{itemize}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\includegraphics[width=\textwidth]{wordembedding.jpg}
+				\caption{Result from Mikolov, et. al. (2013): king - him + her $\approx$ queen}
+			\end{figure}
+	\end{column}
+\end{columns}
+
+
+\end{frame}
+
+\begin{frame}{Factor Augmented Vector Auto-regression (FAVAR)}
+	
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}
+				\item FFF, statements, real economy are all endogenous $\Rightarrow$ SVAR model
+				\item FAVAR uses PCA to preserve degrees of freedom (e.g. Bernanke et al. 2004)
+				\item Use for real economy semantic data
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{align}
+			A\begin{bmatrix}
+			S_t\\F_t\\E_t
+			\end{bmatrix} &=
+			B\begin{bmatrix}
+			S_{t-1}\\F_{t-1}\\E_{t-1}
+			\end{bmatrix} + \epsilon_t \nonumber
+			\end{align}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+\begin{frame}{References}
+\nocite{gurkaynak2005actions}
+\nocite{campbell2012macroeconomic}
+\nocite{le2014distributed}
+\nocite{mikolov2013efficient}
+\nocite{bernanke2005measuring}
+
+\setbeamertemplate{bibliography item}[text]
+\setbeamerfont{bibliography item}{size=\scriptsize}
+\setbeamerfont{bibliography entry author}{size=\scriptsize}
+\setbeamerfont{bibliography entry title}{size=\scriptsize}
+\setbeamerfont{bibliography entry location}{size=\scriptsize}
+\setbeamerfont{bibliography entry note}{size=\scriptsize}
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{frame}
+\end{document}

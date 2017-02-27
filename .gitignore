@@ -13,8 +13,14 @@ inst/doc
 
 *.gz
 
-*.tex
-
 *.blg
 
 *.bbl
+
+*.nav
+
+*.out
+
+*.snm
+
+*.toc
