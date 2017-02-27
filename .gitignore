@@ -18,3 +18,11 @@ inst/doc
 *.blg
 
 *.bbl
+
+*.nav
+
+*.out
+
+*.snm
+
+*.toc
