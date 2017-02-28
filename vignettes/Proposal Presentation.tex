@@ -79,13 +79,19 @@
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\begin{align}
-			A\begin{bmatrix}
-			S_t\\F_t\\E_t
-			\end{bmatrix} &=
+			 \scriptsize\begin{align}
+			&A\begin{bmatrix}
+			\hat{S}_t\\\hat{F}_t\\\-\Delta FFF_t
+			\end{bmatrix} =
 			B\begin{bmatrix}
-			S_{t-1}\\F_{t-1}\\E_{t-1}
-			\end{bmatrix} + \epsilon_t \nonumber
+			\hat{S}_{t-1}\\\hat{F}_{t-1}\\\Delta FFF_{t-1}
+			\end{bmatrix} + \epsilon_t \nonumber \\
+			&\hat{S}_t\text{: $m\times1$ vec. of est. semantic factors} \nonumber \\
+			&\hat{F}_t\text{: $k\times1$ vec. of est. real-economic factors} \nonumber \\
+			&\Delta FFF_t\text{: change in federal funds futures rate} \nonumber \\
+			&\epsilon_t\text{: vec. of innovations} \nonumber \\
+			&A\text{: $m+k+1$ square matrix of contemp. coeff.} \nonumber \\
+			&B\text{: $m+k+1$ square matrix of lag coeff.} \nonumber
 			\end{align}
 		\end{column}
 	\end{columns}
