@@ -33,7 +33,7 @@
 		\begin{itemize}
 			\item FOMC releases statements after meetings, detailing future policy
 			\item Previous research (Campbell et al. 2012, Gurkaynak et al. 2005) study federal fund futures (FFF) as proxy
-			\item Can we study these statements directly?
+			\item Can we directly study these statements and their impact on market expectations?
 		\end{itemize}
 	\end{column}
 	\begin{column}{0.5\textwidth}
@@ -71,22 +71,47 @@
 \begin{frame}{Factor Augmented Vector Auto-regression (FAVAR)}
 	
 	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.48\textwidth}
 			\begin{itemize}
-				\item FFF, statements, real economy are all endogenous $\Rightarrow$ SVAR model
+				\item FFF, statements, real economy all endogenous\quad $\Rightarrow$ SVAR model
 				\item FAVAR uses PCA to preserve degrees of freedom (e.g. Bernanke et al. 2004)
-				\item Use for real economy semantic data
+				\item Use for real economy and semantic data
 			\end{itemize}
 		\end{column}
 		\begin{column}{0.5\textwidth}
-			\begin{align}
-			A\begin{bmatrix}
-			S_t\\F_t\\E_t
-			\end{bmatrix} &=
+			 \scriptsize\begin{align}
+			&A\begin{bmatrix}
+			\hat{S}_t\\\hat{F}_t\\\-\Delta FFF_t
+			\end{bmatrix} =
 			B\begin{bmatrix}
-			S_{t-1}\\F_{t-1}\\E_{t-1}
-			\end{bmatrix} + \epsilon_t \nonumber
+			\hat{S}_{t-1}\\\hat{F}_{t-1}\\\Delta FFF_{t-1}
+			\end{bmatrix} + \epsilon_t \nonumber \\
+			&\hat{S}_t\text{: $m\times1$ vec. of est. semantic factors} \nonumber \\
+			&\hat{F}_t\text{: $k\times1$ vec. of est. real-economic factors} \nonumber \\
+			&\Delta FFF_t\text{: change in federal funds futures rate} \nonumber \\
+			&\epsilon_t\text{: vec. of innovations} \nonumber \\
+			&A\text{: $m+k+1$ square matrix of contemp. coeff.} \nonumber \\
+			&B\text{: $m+k+1$ square matrix of lag coeff.} \nonumber
 			\end{align}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Impulse response}
+	
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\begin{itemize}
+				\item Interested in the impulse response of innovation statements on $FFF$, with and without $\hat{F}$.
+				\item Early results: statement innovation has statistically significant result on $FFF$
+				\item What's an innovation in statement? We can use word2vec to reverse-engineer
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\begin{figure}
+				\includegraphics[width=\textwidth]{impulse_response.png}
+				\caption{Initial results without $\hat{F}$}
+			\end{figure}
 		\end{column}
 	\end{columns}
 \end{frame}
