@@ -1,0 +1,145 @@
+\documentclass{article}
+
+\usepackage{titling}
+\usepackage{amsmath}
+
+
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+\author{
+  Akashoro, Temitope\      \texttt{101020193}
+  \and
+  McNeil, Scott\      \texttt{100744314}
+}
+
+\title{ECON 5029-W: Research Proposal}
+\maketitle
+
+\section{Introduction}
+
+Eight times each year, the U.S. Federal Reserve's Federal Open Market Committee (FOMC) convenes to consider U.S. monetary policy. At the end of this meeting, the committee announces the target federal funds rate for the following period. It then releases a carefully-crafted statement with both the target rate, observations about the economy and plans for future policy. These statements themselves can be a monetary tool if the FOMC can convince the market of its commitment to these future plans. The question is then: what impact, if any, do these statements have on market expectations?
+
+These statements became especially important between December 16, 2008 and December 14, 2016, during which the FOMC maintained a constant federal funds target rate of 0 to 0.25\%. While the Federal Reserve has multiple channels of communication with the public, the post-meeting statement---which is typically just a few short paragraphs---is the primary one. As noted by the Wall Street Journal, ``pundits and traders parse the changes between statements closely to see how policy makers' views are evolving." This, anecdotally, suggested the statements do alter expectations.
+
+Even if the above analysis is true, it might be more pertinent to ask not just if the statements have an impact, but whether the effect lasts beyond short-term stock trading. The Federal Reserve has a dual mandate to maintain inflation and unemployment at acceptable levels and it acts in a predictable way to fulfil these mandates. It is important to understand, then, whether these statements provide the market any information beyond what it could discern from data about the real economy. A rational theory of markets might suggest actors could anticipate the Federal Reserve's movements with or without public statements.
+
+Analysing the statements themselves is difficult. Previous contributions to the literature have relied on federal fund rate futures as a proxy. These futures contracts, available from the Chicago Board of Trade, are bets on the average federal fund rate in a given future month. The price of the future is 100 minus the expected federal fund rate for the month in question. These are purchased by banks and financial organizations as a hedge against unexpected movements in the federal funds rate and should reflect the market expectations about future monetary policy. *** Citation needed
+
+A major contribution to this literature is Gurkaynak, Sack and Swanson (2005), who use a rank test to suggest that there are two principle components of movement in the futures. They argue the first represents responses to changes in the target federal fund rate and second represents responses to statements about future policy. They then compare movements in the futures and asset prices in a tight windows around the announcements and find a significant relationship. Campbell, Evans, Fisher and Justiniano (2012) update this study and find that movement in the futures also corresponded to movements in market expectations about unemployment. Finally, Zeev, Gunn and Khan (2016) attempt to measure the impact of monetary news shocks and rely on federal funds futures as a proxy for forward looking expectations in a DSGE model.
+
+Another line of earlier research that does attempt to directly study public statements from the Federal Reserve is the ``narrative" approach from Romer and Romer (1990) and Boschen and Mills (1991). Both of these use statements and meeting from the FOMC to identify policy directions from the Federal Reserve over time, specifically whether the FOMC was focused on growth or inflation. The goal of both papers, however, was to measure the impact of monetary policy rather than understand how public statements affect market expectations.
+
+Our aim also is to study recent FOMC statements directly, but relying on advancements in the field of natural language processing. Mikolov et. al. (2013) fit a hidden-layer neural network model to predict word co-occurrence within a text dataset. They find the resulting vector representations---and distances between them---contain considerable semantic information. One widely publicised result from their paper is that the vector for ``king," minus the vector for ``him," plus the vector for ``her," approximately equals the vector for ``queen." That is, the distance between ``king" and ``queen" encodes gender. This method is often referred to as word-vectorization or ``word2vec."
+
+Le and Mikolov (2014) present a follow-up method for representing entire documents, which they call document vectorization. This method also fits a hidden-layer, neural network model, but further `` learns" a vector representation simultaneously with the word vectors. The result is that documents with similar semantic meaning have closer vectors than those that are less similar. The paper shows that the technique is particularity effective for sentiment classification.
+
+Our approach, then, will be to use the document vectorization algorithm, which has been dubbed ``doc2vec," to build semantic vectors for the statements over time. We will then fit a model to understand whether movements in these vectors correlate with changes in the federal funds futures, controlling for the effective federal fund rate and information from the real economy.
+
+\section{Methodology}
+
+\subsection{Document Vectorization}
+
+We use Le and Mikolov's document vectorization technique to build a series of semantic vectors for the FOMC statements between 2004 and 2016. Our first hurdle using this algorithm is that it works best with a dataset much larger than the number of statements available during this period. To ameliorate this, we build a text dataset containing all FOMC statements, Federal Reserve Beige Book reports and Federal Reserve Monetary Policy reports going back to 1996. We then use the doc2vec implementation in the gensim library for the Python programming language to build semantic vectors for all the documents. The literature shows that the algorithm works best when fit on at least 100 dimensions, which is the number we will use for our baseline model. We will also test greater dimensions as a test of robustness. We then build a time series of semantic vectors using just the FOMC statements for the period under study.
+
+We expect FOMC statements and the federal fund futures to be endogenously determined and to have contemporaneous effects. Therefore, we will rely on a structural vector auto-regression (SVAR) model. This presents our second hurdle with using this algorithm. With a relatively small number of observations, there is no way we can include the entire semantic vector series. Therefore, we will rely on the factor-augmented VAR method of Stock and Watson (year?) to preserve degrees of freedom. That is, we will use the leading principle components of the semantic vectors instead of the full vectors.
+
+\subsection{Federal Funds Futures}
+
+
+
+The model will be as follows:
+
+\begin{align}
+	A\begin{bmatrix}
+		\hat{S}_t\\
+		R_t\\
+		\Delta FFF_t
+	\end{bmatrix} &=
+	B\begin{bmatrix}
+		\hat{S}_{t-1}\\
+		R_{t-1}\\
+		\Delta FFF_{t-1}
+	\end{bmatrix} +
+	\begin{bmatrix}
+		e_{t,S}\\ 
+		e_{t,R}\\
+		e_{t,FFF}
+		\end{bmatrix} \nonumber
+\end{align}
+
+Where $\hat{S}_t$ is an $m\times1$ vector of the leading principle components of our semantic data at time $t$. $FFF_t$ is the value of federal funds futures at time $t$ and $\Delta FFF_t = FFF_t - FFF_{t-1}$. We use the first difference in this case because the federal fund futures data in the period under study displays strong evidence of a unit root. We use the negative of the difference for interpretation purposes, since it will correlate with the  $e_{t,S}$ is an $m\times1$ vector of innovations in $\hat{S}_t$ at time $t$ and $e_{t,FFF}$ is the innovation in $\Delta FFF_t$ at time $t$. $A$ and $B$ are both square coefficient matrices of dimension $m+1$. $A$ represents the concurrent, structural relationship between the variables, and $B$ is the relationship between the variables at time $t-1$ and time $t$. The transformed version of our model will be:
+
+\begin{align}
+	\begin{bmatrix}
+		\hat{S}_t\\
+		\Delta FFF_t
+	\end{bmatrix} &=
+	A^{-1}\begin{bmatrix}
+		\hat{S}_{t-1}\\
+		\Delta FFF_{t-1}
+	\end{bmatrix} +
+	A^{-1}\begin{bmatrix}
+		e_{t,S}\\ 
+		e_{t,FFF}
+	\end{bmatrix} =
+	C\begin{bmatrix}
+	\hat{S}_{t-1}\\
+	\Delta FFF_{t-1}
+	\end{bmatrix} +
+	\begin{bmatrix}
+	\epsilon_{t,S}\\ 
+	\epsilon_{t,FFF}
+	\end{bmatrix} \nonumber
+\end{align}
+
+Where $C = A^{-1}B$ and $\epsilon_{t,S}$ and $\epsilon_{t,FFF}$ are transformed version of $e_{t,S}$ and $e_{t,FFF}$ respectively. Our interest in this model is both the impulse response of 
+
+
+
+\begin{align}
+	A\begin{bmatrix}
+		S_t\\ \Delta F_t\\E_t
+	\end{bmatrix} &=
+	B\begin{bmatrix}
+		S_{t-1}\\ \Delta F_{t-1}\\E_{t-1}
+	\end{bmatrix} + \epsilon_t \nonumber
+\end{align}
+
+
+
+
+We then compare the principle components of this series with the corresponding federal fund futures in a FAVAR model. We then add a series of real-economy factors to control for how well markets anticipate movements by the Federal Reserve.
+
+Our key variables in this case are our semantic vectors, the futures rates and real economic variables. We expect all three parameter sets to be endogenously determined. For this reason, we have chosen a vector autoregression approach for estimating our model. Specifically, our model will be as follows:
+
+
+
+
+Due to limited observations, we will draw on the factor-augmented VAR (FAVAR) literature to preserve degrees of freedom. The goal, in this case, is to use principle component analysis to extract the main sources of variation in both our semantic and real-economy variables, as per Stock and Watson (2002) and Bernanke et al. (2004). That is, want to reduce $m$ and $k$ to the lowest number possible while still explaining a reasonable amount of variation in the underlying data.
+
+Our estimation method will be structural VAR and we will specifically look at the impulse response on federal fund futures from an innovation in the semantic series.
+
+We will rely on a number of datasets for this paper. First, we plan to use the FOMC statements themselves to generate our semantic vectors. However, the algorithm from Le and Mikolov (2014) requires a considerable corpus to be effective. To achieve this, we will also use two other reports published by the Federal Reserve System: the Beige Book report and the Monetary Policy report. Our other data will other publicly available data sets. This includes data about federal fund futures and the dataset provided by Stock and Watson (2016) for use in FAVAR models.
+
+\section{Expected Results}
+
+We expect there to be a statistically significant relationship between the semantic vectors and the change in federal fund futures over a period. However, our primary 
+
+\begin{enumerate}
+	\item We could provide a better understanding of how forward guidance influences market expectations.
+	\item If our use of natural language processing is successful, we may provide an example for how text documents can be used in an economic context.
+\end{enumerate}
+
+\clearpage
+
+\nocite{gurkaynak2005actions}
+\nocite{campbell2012macroeconomic}
+\nocite{le2014distributed}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+
+
+\end{document}
