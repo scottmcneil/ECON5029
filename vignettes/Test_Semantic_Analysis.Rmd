@@ -1,0 +1,128 @@
+---
+title: "Test Semantic Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Getting FFF Data
+
+```{r libraries, message=FALSE}
+library(dplyr)
+library(lubridate)
+library(modelr)
+library(tseries)
+```
+
+First, I grab all the Federal Fund Futures data from Quandl via the Quandl API. I'm getting data for the 1-, 3- and 6- month futures from January 1, 2009 through to December 1, 2016. I then join them into a single dataframe.
+
+```{r ffff}
+#Quandl API keys:
+#Quandl("CHRIS/CME_FF6", api_key="_zLhoy4-o4M64Ddp47Sx", start_date="2009-01-01")
+#Quandl("CHRIS/CME_FF3", api_key="_zLhoy4-o4M64Ddp47Sx", start_date="2009-01-01")
+#Quandl("CHRIS/CME_FF1", api_key="_zLhoy4-o4M64Ddp47Sx", start_date="2009-01-01")
+
+load('fff1.rda')
+load('fff3.rda')
+load('fff6.rda')
+
+fff <- fff1 %>%
+  rename(Settle1 = Settle) %>%
+  left_join(fff3, by = 'Date') %>%
+  rename(Settle3 = Settle) %>%
+  left_join(fff6, by = 'Date') %>%
+  rename(Settle6 = Settle)
+```
+
+Next I'm pulling in my document vectors, which were generated using a Python script (available in the Other folder). I then do a principal compontent analysis on each set of document vectors. Then I join the PCA vectors with the original vectors and the FFF data and generate lagged variables of the futures data.
+```{r docvecs}
+load('dmc_docvecs.rda')
+load('dmm_docvecs.rda')
+load('dbow_docvecs.rda')
+
+dmc_pca <- dmc_docvecs %>%
+  select(-Date) %>%
+  prcomp() %$% x %>%
+  data.frame()
+
+dmm_pca <- dmm_docvecs %>%
+  select(-Date) %>%
+  prcomp() %$% x %>%
+  data.frame()
+
+dbow_pca <- dbow_docvecs %>%
+  select(-Date) %>%
+  prcomp() %$% x %>%
+  data.frame()
+
+dmc <- dmc_docvecs %>%
+  bind_cols(dmc_pca) %>%
+  left_join(fff, by = 'Date') %>%
+  arrange(Date) %>%
+  mutate(deltaSettle1 = Settle1 - lag(Settle1),
+         deltaSettle3 = Settle3 - lag(Settle3),
+         deltaSettle6 = Settle6 - lag(Settle6))
+
+dmm <- dmm_docvecs %>%
+  bind_cols(dmc_pca) %>%
+  left_join(fff, by = 'Date') %>%
+  arrange(Date) %>%
+  mutate(deltaSettle1 = Settle1 - lag(Settle1),
+         deltaSettle3 = Settle3 - lag(Settle3),
+         deltaSettle6 = Settle6 - lag(Settle6))
+
+dbow <- dbow_docvecs %>%
+  bind_cols(dbow_pca) %>%
+  left_join(fff, by = 'Date') %>%
+  arrange(Date) %>%
+  mutate(deltaSettle1 = Settle1 - lag(Settle1),
+         deltaSettle3 = Settle3 - lag(Settle3),
+         deltaSettle6 = Settle6 - lag(Settle6))
+
+```
+Next, I want to check to see which of my series are unit root:
+
+```{r adf, warning=FALSE}
+
+dmm %>% select(PC1) %>% filter(!is.na(PC1)) %>% unlist() %>% adf.test(k = 1)
+dmm %>% select(PC1) %>% filter(!is.na(PC1)) %>% unlist() %>% adf.test(k = 1)
+
+dmm %>% select(Settle6) %>% filter(!is.na(Settle6)) %>% unlist() %>% adf.test(k = 1)
+dmm %>% select(Settle3) %>% filter(!is.na(Settle3)) %>% unlist() %>% adf.test(k = 1)
+dmm %>% select(Settle1) %>% filter(!is.na(Settle1)) %>% unlist() %>% adf.test(k = 1)
+
+dmm %>% select(deltaSettle6) %>% filter(!is.na(deltaSettle6)) %>% unlist() %>% adf.test(k = 1)
+dmm %>% select(deltaSettle3) %>% filter(!is.na(deltaSettle3)) %>% unlist() %>% adf.test(k = 1)
+dmm %>% select(deltaSettle1) %>% filter(!is.na(deltaSettle1)) %>% unlist() %>% adf.test(k = 1)
+
+```
+
+So all of the futures series are unit roots. The first difference of the futures and my first principle component are not unit roots.
+
+Next, I'll try regressing all three futures time series on the first lag and the first two principal components of the document vectors.
+
+```{r regression}
+
+dmc_model6 <- lm(data = dmc, formula = deltaSettle6 ~ PC1)
+summary(dmc_model6)
+
+dmc_model3 <- lm(data = dmc, formula = deltaSettle3 ~ PC1)
+summary(dmc_model3)
+
+dmc_model1 <- lm(data = dmc, formula = deltaSettle1 ~ PC1)
+summary(dmc_model1)
+
+
+dmm_model6 <- lm(data = dmm, formula = deltaSettle6 ~ PC1)
+summary(dmc_model6)
+
+dmm_model3 <- lm(data = dmm, formula = deltaSettle3 ~ PC1)
+summary(dmc_model3)
+
+dmm_model1 <- lm(data = dmm, formula = deltaSettle1 ~ PC1)
+summary(dmc_model3)
+
+```
+
