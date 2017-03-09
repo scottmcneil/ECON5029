@@ -10,10 +10,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Getting FFF Data
 
 ```{r libraries, message=FALSE}
+library(tseries)
+library(vars)
 library(dplyr)
 library(lubridate)
-library(modelr)
-library(tseries)
 ```
 
 First, I grab all the Federal Fund Futures data from Quandl via the Quandl API. I'm getting data for the 1-, 3- and 6- month futures from January 1, 2009 through to December 1, 2016. I then join them into a single dataframe.
@@ -52,10 +52,10 @@ dmm_pca <- dmm_docvecs %>%
   prcomp() %$% x %>%
   data.frame()
 
-dbow_pca <- dbow_docvecs %>%
-  select(-Date) %>%
-  prcomp() %$% x %>%
-  data.frame()
+# dbow_pca <- dbow_docvecs %>%
+#   select(-Date) %>%
+#   prcomp() %$% x %>%
+#   data.frame()
 
 dmc <- dmc_docvecs %>%
   bind_cols(dmc_pca) %>%
@@ -73,13 +73,13 @@ dmm <- dmm_docvecs %>%
          deltaSettle3 = Settle3 - lag(Settle3),
          deltaSettle6 = Settle6 - lag(Settle6))
 
-dbow <- dbow_docvecs %>%
-  bind_cols(dbow_pca) %>%
-  left_join(fff, by = 'Date') %>%
-  arrange(Date) %>%
-  mutate(deltaSettle1 = Settle1 - lag(Settle1),
-         deltaSettle3 = Settle3 - lag(Settle3),
-         deltaSettle6 = Settle6 - lag(Settle6))
+# dbow <- dbow_docvecs %>%
+#   bind_cols(dbow_pca) %>%
+#   left_join(fff, by = 'Date') %>%
+#   arrange(Date) %>%
+#   mutate(deltaSettle1 = Settle1 - lag(Settle1),
+#          deltaSettle3 = Settle3 - lag(Settle3),
+#          deltaSettle6 = Settle6 - lag(Settle6))
 
 ```
 Next, I want to check to see which of my series are unit root:
@@ -123,6 +123,53 @@ summary(dmc_model3)
 
 dmm_model1 <- lm(data = dmm, formula = deltaSettle1 ~ PC1)
 summary(dmc_model3)
+
+```
+
+```{r VAR}
+
+dmc_var1 <- dmc %>%
+  select(deltaSettle1, PC1) %>%
+  filter(!is.na(deltaSettle1)) %>%
+  VAR(p = 1)
+
+dmc_var3 <- dmc %>%
+  select(deltaSettle3, PC1) %>%
+  filter(!is.na(deltaSettle3)) %>%
+  VAR(p = 1)
+
+dmc_var6 <- dmc %>%
+  select(deltaSettle6, PC1) %>%
+  filter(!is.na(deltaSettle6)) %>%
+  VAR(p = 1)
+
+dmm_var1 <- dmm %>%
+  select(deltaSettle1, PC1) %>%
+  filter(!is.na(deltaSettle1)) %>%
+  VAR(p = 1)
+
+dmm_var3 <- dmm %>%
+  select(deltaSettle3, PC1) %>%
+  filter(!is.na(deltaSettle3)) %>%
+  VAR(p = 1)
+
+dmm_var6 <- dmm %>%
+  select(deltaSettle6, PC1) %>%
+  filter(!is.na(deltaSettle6)) %>%
+  VAR(p = 1)
+
+dmc_irf6 <- irf(dmc_var6, impulse = 'PC1', response = 'deltaSettle6')
+plot(dmc_irf6)
+
+dmc_irf3 <- irf(dmc_var3, impulse = 'PC1', response = 'deltaSettle3')
+plot(dmc_irf3)
+
+dmm_irf6 <- irf(dmm_var6, impulse = 'PC1', response = 'deltaSettle6')
+plot(dmm_irf6)
+
+dmm_irf3 <- irf(dmm_var3, impulse = 'PC1', response = 'deltaSettle3')
+plot(dmm_irf3)
+
 
 ```
 
