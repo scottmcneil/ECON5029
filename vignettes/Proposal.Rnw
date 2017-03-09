@@ -123,9 +123,31 @@ Our estimation method will be structural VAR and we will specifically look at th
 We will rely on a number of datasets for this paper. First, we plan to use the FOMC statements themselves to generate our semantic vectors. However, the algorithm from Le and Mikolov (2014) requires a considerable corpus to be effective. To achieve this, we will also use two other reports published by the Federal Reserve System: the Beige Book report and the Monetary Policy report. Our other data will other publicly available data sets. This includes data about federal fund futures and the dataset provided by Stock and Watson (2016) for use in FAVAR models.
 
 \section{Factor Augmented Vector Autoregression (FAVAR)}
-Factor augmented VAR is originally credited to Bernanke, Boivin and Eliasz (2005). Unlike the structural VAR models which addresses only unanticipated changes to monetary policy, FAVAR also captures anticipated changes to monetary policy. Like Bernanke et al (2005), we use the two step method which uses principal component analysis to obtain factors for the model.
-With the help of the database prepared by Mccracken and Ng (2015), we are able to replicate the factor extracting process used by Bernanke, Boivin and Eliasz (2005). 
+Factor augmented VAR is originally credited to Bernanke, Boivin and Eliasz (2005). We use FAVAR in order to capture both unanticipated and anticipated changes to monetary policy. Like Bernanke et al (2005), we use the two-step method which uses principal component analysis to obtain factors for the SVAR model.
+With the help of the database prepared by FRED-MD (Mccracken and Ng, 2015), we are able to replicate the factor extracting process using 129 macroeconomic variables available on FRED-MD. These variables have been transformed and are therefore stationary. 
 
+The underlying assumption of the factor analysis is that the federal funds rate,  are observed factors in the economy which we can measure without error and there are unobserved elements called factors, $F_t$, which affect the economy and are assumed to not respond to monetary shocks within the month. We will derive these factors. 
+
+Let the collective series of macroeconomic variables be $M_t$ which is an N x 1 vector. $F_t$ is a K x 1 vector where K << N and $Y_t$ is an M x 1 vector. So, we have a model as follows:
+
+\begin{align}
+M_t = \delta_y Y_t + \delta_f F_t + \epsilon_t
+\end{align}
+
+$\delta_y$ is an N x M matrix and  $\delta_f$ is an N x K matrix of parameters.
+We begin the first step by obtaining the first principal component of the macroeconomic series, $\hat{C_t}$. We know that this principal component comprises of both $Y_t$ and $F_t$ such that $\hat{C_t}$ = $\hat{C_t}(F_t, Y_t)$.
+
+Like in Bernanke et al (2005), we will separate the macroeconomic series into slow-moving and fasting-moving variables. Slow-moving variables are defined as variables that do not respond to shocks within the month(such as employment and price indices). Fast-moving variables, on the other hand, have contemporaneous response to policy shocks(such as asset prices and exchange rates). 
+In the next step, we obtain the first principal components of the slow-moving variables, $\hat{F^s}_t$ and run a regression of the following form,
+\begin{align}
+\hat{C_t}= \beta_y Y_t + \beta_f \hat{F^s}_t + \varepsilon_t
+\end{align}
+ We expect that the fast moving variables respond quickly to changes in the federal funds rate and therefore, variations in them is already captured by $Y_t$.
+The factors $\hat{F}_t$ are then obtained as follows,
+\begin{align}
+\hat{F_t}= \hat{C}_t - \hat{ \beta_y} Y_t 
+\end{align}
+$\hat{F_t}$ is then plugged into our SVAR model.
 \section{Expected Results}
 
 We expect there to be a statistically significant relationship between the semantic vectors and the change in federal fund futures over a period. However, our primary 
