@@ -65,7 +65,7 @@ The model will be as follows:
 		e_{t,S}\\ 
 		e_{t,R}\\
 		e_{t,FFF}
-		\end{bmatrix} \nonumber
+		\end{bmatrix} \nonumber \label{eq:1}
 \end{align}
 
 Where $\hat{S}_t$ is an $m\times1$ vector of the leading principle components of our semantic data at time $t$. $FFF_t$ is the value of federal funds futures at time $t$ and $\Delta FFF_t = FFF_t - FFF_{t-1}$. We use the first difference in this case because the federal fund futures data in the period under study displays strong evidence of a unit root. We use the negative of the difference for interpretation purposes, since it will correlate with the  $e_{t,S}$ is an $m\times1$ vector of innovations in $\hat{S}_t$ at time $t$ and $e_{t,FFF}$ is the innovation in $\Delta FFF_t$ at time $t$. $A$ and $B$ are both square coefficient matrices of dimension $m+1$. $A$ represents the concurrent, structural relationship between the variables, and $B$ is the relationship between the variables at time $t-1$ and time $t$. The transformed version of our model will be:
@@ -90,7 +90,7 @@ Where $\hat{S}_t$ is an $m\times1$ vector of the leading principle components of
 	\begin{bmatrix}
 	\epsilon_{t,S}\\ 
 	\epsilon_{t,FFF}
-	\end{bmatrix} \nonumber
+	\end{bmatrix} \nonumber \label{eq:2}
 \end{align}
 
 Where $C = A^{-1}B$ and $\epsilon_{t,S}$ and $\epsilon_{t,FFF}$ are transformed version of $e_{t,S}$ and $e_{t,FFF}$ respectively. Our interest in this model is both the impulse response of 
@@ -103,7 +103,7 @@ Where $C = A^{-1}B$ and $\epsilon_{t,S}$ and $\epsilon_{t,FFF}$ are transformed 
 	\end{bmatrix} &=
 	B\begin{bmatrix}
 		S_{t-1}\\ \Delta F_{t-1}\\E_{t-1}
-	\end{bmatrix} + \epsilon_t \nonumber
+	\end{bmatrix} + \epsilon_t \nonumber \label{eq:3}
 \end{align}
 
 
@@ -121,6 +121,10 @@ Due to limited observations, we will draw on the factor-augmented VAR (FAVAR) li
 Our estimation method will be structural VAR and we will specifically look at the impulse response on federal fund futures from an innovation in the semantic series.
 
 We will rely on a number of datasets for this paper. First, we plan to use the FOMC statements themselves to generate our semantic vectors. However, the algorithm from Le and Mikolov (2014) requires a considerable corpus to be effective. To achieve this, we will also use two other reports published by the Federal Reserve System: the Beige Book report and the Monetary Policy report. Our other data will other publicly available data sets. This includes data about federal fund futures and the dataset provided by Stock and Watson (2016) for use in FAVAR models.
+
+\section{Factor Augmented Vector Autoregression (FAVAR)}
+Factor augmented VAR is originally credited to Bernanke, Boivin and Eliasz (2005). Unlike the structural VAR models which addresses only unanticipated changes to monetary policy, FAVAR also captures anticipated changes to monetary policy. 
+
 
 \section{Expected Results}
 
