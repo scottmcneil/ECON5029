@@ -123,8 +123,8 @@ Our estimation method will be structural VAR and we will specifically look at th
 We will rely on a number of datasets for this paper. First, we plan to use the FOMC statements themselves to generate our semantic vectors. However, the algorithm from Le and Mikolov (2014) requires a considerable corpus to be effective. To achieve this, we will also use two other reports published by the Federal Reserve System: the Beige Book report and the Monetary Policy report. Our other data will other publicly available data sets. This includes data about federal fund futures and the dataset provided by Stock and Watson (2016) for use in FAVAR models.
 
 \section{Factor Augmented Vector Autoregression (FAVAR)}
-Factor augmented VAR is originally credited to Bernanke, Boivin and Eliasz (2005). Unlike the structural VAR models which addresses only unanticipated changes to monetary policy, FAVAR also captures anticipated changes to monetary policy. 
-
+Factor augmented VAR is originally credited to Bernanke, Boivin and Eliasz (2005). Unlike the structural VAR models which addresses only unanticipated changes to monetary policy, FAVAR also captures anticipated changes to monetary policy. Like Bernanke et al (2005), we use the two step method which uses principal component analysis to obtain factors for the model.
+With the help of the database prepared by Mccracken and Ng (2015), we are able to replicate the factor extracting process used by Bernanke, Boivin and Eliasz (2005). 
 
 \section{Expected Results}
 
