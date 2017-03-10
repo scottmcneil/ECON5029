@@ -29,15 +29,15 @@ Even if the above analysis is true, it might be more pertinent to ask not just i
 
 Analysing the statements themselves is difficult and previous contributions to the literature have relied on federal funds futures as a proxy. These futures contracts are bets on the average federal funds rate in a given future month. They are purchased by banks and financial organizations as a hedge against unexpected movements in the federal funds rate and should reasonably reflect market expectations about future monetary policy.\footcite{cmefutures}
 
-A major contribution to this literature is Gurkaynak, Sack and Swanson (2005), who use a rank test to show there are two principle components of movement in the futures. They argue the first represents responses to changes in the target federal funds rate and the second represents responses to statements about future policy. They then estimate a event model, tracking the futures and asset prices in tight windows around the announcements and find a significant relationship. Campbell, Evans, Fisher and Justiniano (2012) update this study and find that movement in the futures also corresponded to movements in market expectations about unemployment. Finally, Zeev, Gunn and Khan (2016) attempt to measure the impact of monetary news shocks and rely on federal funds futures as a proxy for forward looking expectations in a DSGE model.
+A major contribution to this literature is Gurkaynak, Sack and Swanson (2005), who use a rank test to show there are two principle components of movement in the futures. They argue the first represents responses to changes in the target federal funds rate and the second represents responses to statements about future policy. They then estimate a event study model, tracking the futures and asset prices in tight windows around the announcements and find a significant relationship. Campbell, Evans, Fisher and Justiniano (2012) update this study and find that movement in the futures also corresponded to movements in market expectations about unemployment. Finally, Zeev, Gunn and Khan (2016) attempt to measure the impact of monetary news shocks and rely on federal funds futures as a proxy for forward looking expectations in a DSGE model.
 
-Another line of earlier research that does attempt to directly study public statements from the Federal Reserve is the ``narrative" approach from Romer and Romer (1990) and Boschen and Mills (1991). Both of these use statements and meeting from the FOMC to identify changes in policy direction from the Federal Reserve over time. Both are particularly interested in whether the FOMC was focused on growth or inflation in a given period. The goal of the papers, however, was to measure the impact of monetary policy rather than understand how public statements affect market expectations.
+Another line of earlier research that does attempt to directly study public statements from the Federal Reserve is the ``narrative" approach from Romer and Romer (1989) and Boschen and Mills (1991). Both use statements and meeting from the FOMC to identify changes in policy direction from the Federal Reserve over time. Both are particularly interested in whether the FOMC was focused on growth or inflation in a given period. The goal of the papers, however, was to measure the impact of monetary policy rather than understand how public statements affect market expectations.
 
 Our aim is also to study FOMC statements directly, but relying on advancements in the field of natural language processing. One important area of recent research is natural language embeddings, where an algorithm is used to project words and documents into a meaningful vector space. A main contribution to this literature is Mikolov et. al. (2013), who fit a hidden-layer neural network model to predict word co-occurrence within a text dataset. They find the resulting vector representations---and the distances between those vectors---contain considerable semantic information. One widely publicised result from their paper is that the vector for ``king," minus the vector for ``him," plus the vector for ``her," approximately equals the vector for ``queen." That is, the distance between ``king" and ``queen" encodes gender. This method is often referred to as word-vectorization or ``word2vec."
 
 Le and Mikolov (2014) present a follow-up method for representing entire documents as vectors, which they call document vectorization. This method uses the same hidden-layer, neural network set-up to predict word co-occurrence, but simultaneously fits a vector representation for each document. The result is that documents with similar semantic meaning have closer vectors than those that are less similar. The paper shows that the technique is particularity effective for sentiment classification.
 
-Our approach, then, will be to use the document vectorization algorithm, which has been dubbed ``doc2vec," to build a time series of semantic vectors for FOMC statements. Our goal then will be two-fold. First, we want to fit a baseline structural VAR model with the semantic data, federal funds futures and the effective federal funds rate. Our aim for this model is to show that semantic data correlates with the futures data in an expected way. Our second aim is to augment our model with data about the real economy, specifically relying on factor data due to Stock and Watson (2016). The goal of this additional model is to test whether statements do provide the market with information beyond what is otherwise available.
+Our approach, then, will be to use the document vectorization algorithm, which has been dubbed ``doc2vec," to build a time series of semantic vectors for FOMC statements. Our goal then will be two-fold. First, we want to fit a baseline structural VAR model with the semantic data, federal funds futures and the effective federal funds rate. Our aim for this model is to show that semantic data correlates with the futures data in an expected way. Our second aim is to augment our model with data about the real economy, specifically relying the factor-augmented method due to Bernanke, Boivin and Eliasz (2005). The goal of this additional model is to test whether statements do provide the market with information beyond what is otherwise available.
 
 \section{Methodology}
 
@@ -45,16 +45,15 @@ Our approach, then, will be to use the document vectorization algorithm, which h
 
 The algorithm presented in Mikolov et. al. (2013) works by splitting a set of documents into individual words and randomly initializing a vector of arbitrary length for each unique word. Then, a dataset is generated where the dependent variable is each word used in the original text data set and the independent variables are the words preceding or surrounding the dependent word in a fixed window. For example, as demonstrated in Le and Mikolov (2014), if the first four words of the input were ``the cat sat on," the model would concatenate the initialized vectors of ``the," ``cat" and ``sat" as a set of independent variables to predict the word ``on." Each subsequent dependent variable word would be matched up with an equivalent set of independent variables. The algorithm then fits a hierarchical softmax, hidden-layer neural network model to the dataset. The model is fit using stochastic gradient descent and the backpropogation method (Rumelhart, et. al., 1986) that incrementally updates the vectors until convergence.
 
-The method presented in Le and Mikolov (2014) also initializes a vector for each document in the dataset, which is added as a independent variable for each corresponding word. For example, in the initial example, an additional vector would be added to the independent variables for ``on" as well as all subsequent words in that document. The same neural network model is then fit, incrementally updating both word and document vectors until convergence. The key aspect to this is that word vectors remain the same for all occurrences of a word, regardless where they appear, while document vectors are the same for all word occurrences appearing in that document. As noted about, the resulting vectors are shown to contain considerable semantic information.
+The method presented in Le and Mikolov (2014) also initializes a vector for each document in the dataset, which is added as a independent variable for each corresponding word. In the initial example, an additional vector would be added to the independent variables for ``on" as well as all subsequent words in that document. The same neural network model is then fit, incrementally updating both word and document vectors until convergence. The key aspect to this is that word vectors remain the same for all occurrences of a word, regardless where they appear, while document vectors are the same for all word occurrences appearing in that document. As noted about, the resulting vectors are shown to contain considerable semantic information.
 
-We will use Le and Mikolov's document vectorization technique to build a series of semantic vectors for FOMC statements between 2004 and 2016. Our first hurdle to using this algorithm is that it works best with a dataset much larger than the number of statements available. To ameliorate this, we will build a text dataset containing all FOMC statements, Federal Reserve Beige Book reports and Federal Reserve Monetary Policy reports going back to 1996. We will then build semantic vectors for the entire document set, relying on the implementation of doc2vec in the gensim library for the Python programming language. Le and Mikolov show that the algorithm works best when fit on at least 100 dimensions and using a window size of 8. We will use both for our baseline model but will test alternatives as a check for robustness. Finally, we will build a time series of semantic vectors using just the FOMC statements for the period under study.
+We will use Le and Mikolov's document vectorization technique to build a series of semantic vectors for FOMC statements between 2004 and 2016. Our first hurdle to using this algorithm is that it works best with a dataset much larger than the number of statements available. To ameliorate this, we will build a text dataset containing all FOMC statements, Federal Reserve Beige Book reports and Federal Reserve Monetary Policy reports going back to 1996. We will then build semantic vectors for the entire document set, relying on the implementation of doc2vec in the gensim library for the Python programming language ({\v R}eh{\r u}{\v r}ek and Sojka, 2010). Le and Mikolov show that the algorithm works best when fit on at least 100 dimensions and using a window size of 8. We will use both for our baseline model but will test alternatives as a check for robustness. Finally, we will build a time series of semantic vectors using just the FOMC statements for the period under study.
 
 We expect FOMC statements and the federal funds futures to be endogenously determined and to have contemporaneous effects. Therefore, we will rely on a structural vector auto-regression (SVAR) model. This presents our second hurdle with using the doc2vec algorithm. With a relatively small number of observations, there is no way we can include the entire, 100-dimension semantic vector series. Therefore, we will rely on the principle component method of Stock and Watson (2002) to preserve degrees of freedom. That is, we will include just the $m$ principle components of the vectors in the model. In this case, $m$ will be varied as a test for robustness.
 
-Our baseline model will also include Federal Fund futures as our measure of market expectations. These futures were originally offered by the Chicago Board of Trade (CBOT) starting in 1988. They are now offered by the CME Group, a merger of the CBOT and the Chicago Mercantile Exchange. The futures are a bet on the average effective federal funds rate in a given future month, with the price equalling 100 minus the expected rate. We will rely on a dataset compiled by the website Quandl. In this case, data is ``concatenated," that is it is expressed as a rolling value for a set number of months in the future. For example, $FFF6_t$ would be the value of the futures six months months in the future at time $t$. For robustness, we will test the 2, 4, and 6 month futures series, which correspond roughly to the prediction for 1, 2 and 3 FOMC policy meetings in the future.
+Our baseline model will also include Federal Fund futures as our measure of market expectations. These futures were originally offered by the Chicago Board of Trade (CBOT) starting in 1988. They are now offered by the CME Group, a merger of the CBOT and the Chicago Mercantile Exchange. The futures are a bet on the average effective federal funds rate in a given future month, with the price equalling 100 minus the expected rate. We will rely on a dataset compiled by the website Quandl \footcite{quandl}. In this case, data is ``concatenated," that is it is expressed as a rolling value for a set number of months in the future. For example, $FFF6_t$ would be the value of the futures six months months from a given time $t$. For robustness, we will test the 2, 4, and 6 month futures series, which correspond roughly to the prediction for 1, 2 and 3 FOMC policy meetings in the future.
 
 Finally, we will include the effective federal funds rate from the Federal Reserve Bank of of St. Louis FRED database. Our baseline model, then, will be as follows:
-
 \begin{align}
 	A_b\begin{bmatrix}
 		\hat{S}_t\\
@@ -70,11 +69,9 @@ Finally, we will include the effective federal funds rate from the Federal Reser
 		e_{t,S}\\ 
 		e_{t,R}\\
 		e_{t,FFF}
-		\end{bmatrix} \label{eq:baselinestruc}
+	\end{bmatrix} \label{eq:baselinestruc}
 \end{align}
-
-$\hat{S}_t$ is an $m\times1$ vector of the leading principle components of our semantic data at time $t$. $FFF_t$ is the value of the federal funds futures at time $t$ and $\Delta FFF_t = FFF_t - FFF_{t-1}$. $R_t$ is the effective federal funds rate at time $t$ and $\Delta R_t = R_t - R_{t-1}$. We use the first difference in this case because both series in the period under study display strong evidence of a unit root. For interpretation reasons, we use the negative of the difference for the futures, since their price is 100 minus the expected federal funds rate. $e_{t,S}$ is the $m\times1$ vector of structural innovations in $\hat{S}_t$ at time $t$. $e_{t,FFF}$ and $e_{t,R}$ are the innovations in $-\Delta FFF_t$ and $\Delta R_t$, respectively, at time $t$. $A_b$ and $B_b$ are both square coefficient matrices of dimension $m+2$. $A_b$ represents the contemporaneous, structural relationship between the variables, and $B_b$ is the relationship between the variables at time $t-1$ and time $t$. We expect all our variables in the baseline model to be stationary without drift, so we do not include a constant term. The transformed version of our model will be:
-
+$\hat{S}_t$ is an $m\times1$ vector of the leading principle components of our semantic data. $FFF_t$ is the value of the federal funds futures and $\Delta FFF_t = FFF_t - FFF_{t-1}$. $R_t$ is the effective federal funds rate and $\Delta R_t = R_t - R_{t-1}$. We use the first difference in this case because both series in the period under study display strong evidence of a unit root. For interpretation reasons, we use the negative of the difference for the futures, since their price is 100 minus the expected federal funds rate. $e_{t,S}$ is the $m\times1$ vector of structural innovations in $\hat{S}_t$. $e_{t,FFF}$ and $e_{t,R}$ are the innovations in $-\Delta FFF_t$ and $\Delta R_t$, respectively. $A_b$ and $B_b$ are both square coefficient matrices of dimension $m+2$. $A_b$ represents the contemporaneous, structural relationship between the variables, and $B_b$ is the relationship between the variables at time $t-1$ and time $t$. We expect all our variables in the baseline model to be stationary without drift, so we do not include a constant term. The transformed version of our model will be:
 \begin{align}
 	\begin{bmatrix}
 		\hat{S}_t\\
@@ -92,23 +89,35 @@ $\hat{S}_t$ is an $m\times1$ vector of the leading principle components of our s
 		e_{t,FFF}
 	\end{bmatrix} \nonumber \\
 	&= C_b\begin{bmatrix}
-	\hat{S}_{t-1}\\
-	\Delta R_{t-1}\\
-	-\Delta FFF_{t-1}
+		\hat{S}_{t-1}\\
+		\Delta R_{t-1}\\
+		-\Delta FFF_{t-1}
 	\end{bmatrix} +
 	\begin{bmatrix}
-	\epsilon_{t,S}\\ 
-	\epsilon_{t,R}\\
-	\epsilon_{t,FFF}
+		\epsilon_{t,S}\\ 
+		\epsilon_{t,R}\\
+		\epsilon_{t,FFF}
 	\end{bmatrix} \label{eq:baselinereduce}
 \end{align}
-
-Where $C_b = A_b^{-1}B_b$ and $\epsilon_{t,S}$, $\epsilon_{t,R}$ and $\epsilon_{t,FFF}$ are transformed version of $e_{t,S}$, $e_{t,R}$ and $e_{t,FFF}$ respectively. We estimate the transformed version of our model using the standard VAR ordinary least squares method. Our interest in this model is in the relationship between $\hat{S}_{t-1}$ and $-\Delta FFF_t$. We aim to analyze this in two ways. First, we will use Granger causality to test the null hypothesis that $\hat{S}$ contains no forecasting information about future values of $-\Delta FFF$. A rejection the null hypothesis in this case would provide evidence that changes in the semantics of the documents correlate with movements in the futures rate. As noted, we also wish to understand the persistence of the effect from the semantic data on the futures series. We will therefore analyze the impulse responses from innovation $e_{S,t}$ on $-\Delta FFF_t$. Since our VAR is structural and $e_{S,t}$ is not observed in our reduced model, we must specify a identification method to recover the true innovation. Our main approach to this will be to structure our periods such that a period begins on the day a statement is released. Since the statements will then be fixed for the remainder of the period, we feel it is valid to suggest that movements in the futures cannot affect the statements contemporaneously, allowing us to recover $e_{S,t}$. For robustness we will also use the 
+Where $C_b = A_b^{-1}B_b$ and $\epsilon_{t,S}$, $\epsilon_{t,R}$ and $\epsilon_{t,FFF}$ are transformed version of $e_{t,S}$, $e_{t,R}$ and $e_{t,FFF}$ respectively. We estimate the transformed version of our model using the standard VAR ordinary least squares method. Our interest in this model is in the relationship between $\hat{S}_{t-1}$ and $-\Delta FFF_t$. We aim to analyze this in two ways. First, we will use Granger causality to test the null hypothesis that $\hat{S}$ contains no forecasting information about future values of $-\Delta FFF$. A rejection the null hypothesis in this case would provide evidence that changes in the semantics of the documents correlate with movements in the futures rate. As noted, we also wish to understand the persistence of the effect from the semantic data on the futures series. We will therefore analyze the impulse responses from innovation $e_{S,t}$ on $-\Delta FFF_t$. Since our VAR is structural and $e_{S,t}$ is not observed in our reduced model, we must specify a identification method to recover the true innovation. As is standard, we will use a Cholesky decomposition along with contemporaneous restrictions. For our additional restrictions, we will structure our periods such that a period begins on the day a statement is released. Since the statements will then be fixed for the remainder of the period, we feel it is valid to suggest that movements in the futures and the federal fund rate cannot affect the statements contemporaneously. We will also add the restriction that the futures cannot affect the federal fund rate contemporaneously, allowing us to recover $e_{S,t}$. As a test for robustness, we will also consider long-run restrictions.
 
 \subsection{Factor-Augmented Model}
 
-Our augmented model will be as follows:
+Our broader research goal is to ask whether the statements add new information that wouldn't be otherwise be available. To do so, we will augment our baseline model with data about the real economy. As with our 100-dimension semantic vectors, though, there is no way for us to include all the various data series available to a given agent. We will therefore rely on the factor-augmented VAR model due to Bernanke, Boivin and Eliasz (2005). We will specifically use their two-step method, which uses principal component analysis to obtain factors for the SVAR model.
 
+We will rely on the database prepared by FRED-MD (Mccracken and Ng, 2015), which contains 129 macroeconomic variables, all of which have been made stationary and otherwise normalized. Using this database, we are able to replicate the factor extracting process. The underlying assumption of our factor analysis is that the federal funds rate are factors observed without error. We then assume there are some unobserved elements, referred to as factors $F_t$, which affect the economy and are assumed to not respond to changes in monetary policy contemporaneously. The goal of the factor-augmented method is then to estimate these factors. Let $M_t$ be a $N \times 1$ vector of all our macroeconomic series. Then $F_t$ is a $k \times 1$ vector where $k < N$ and $R_t$ is the federal funds rate. So, we have a model as follows:
+\begin{align}
+	M_t = \delta_r R_t + \delta_f F_t + \mu_t
+\end{align}
+$\delta_r$ and $\delta_f$ are $N \times 1$ and $N \times k$ matrices of parameters. We obtain the first principal component of the macroeconomic series, $\hat{C_t}$, which we comprises both $Y_t$ and $F_t$ such that $\hat{C_t}$ = $\hat{C_t}(F_t, R_t)$. As in Bernanke, Boivin and Eliasz (2005), we will separate the macroeconomic series into slow-moving and fasting-moving variables. Slow-moving variables are defined as those that do not respond to shocks contemporaneously, such as employment and price indices. Fast-moving variables, on the other hand, have contemporaneous responses to policy shocks, such as asset prices and exchange rates. In the next step, we obtain the first principal components of the slow-moving variables, $\hat{F^s}_t$ and run a regression of the following form,
+\begin{align}
+	\hat{C_t}= \beta_r R_t + \beta_f \hat{F^s}_t + \upsilon_t
+\end{align}
+We expect that the fast moving variables respond quickly to changes in the federal funds rate and therefore, variations in them is already captured by $Y_t$. The factors $\hat{F}_t$ are then obtained as follows,
+\begin{align}
+	\hat{F_t}= \hat{C}_t - \hat{ \beta_y} R_t
+\end{align}
+$\hat{F_t}$ is then plugged into the SVAR model. Our augmented model will then be as follows:
 \begin{align}
 	A_f\begin{bmatrix}
 		\hat{S}_t\\
@@ -129,9 +138,7 @@ Our augmented model will be as follows:
 		u_{t,FFF}
 	\end{bmatrix} \label{eq:augmentedstruc}
 \end{align}
-
-$\hat{S}_t$, $\Delta R_t$ and $-\Delta FFF_t$ are the same as in our baseline model and $\hat{F}_t$ is a $k \times 1$ vector of estimated real-economic factors at time $t$. $u_{t,S}$ is the $m\times1$ vector of structural innovations in $\hat{S}_t$ at time $t$ and $u_{t,F}$ is $k \times 1$ vector of structural innovations in $\hat{F}_t$. $u_{t,FFF}$ and $u_{t,R}$ are the structural innovations in $-\Delta FFF_t$ and $\Delta R_t$, respectively, at time $t$. $A_f$ and $B_f$ are square coefficient matrices of dimension $k + m + 2$. Our transformed model will then be:
-
+$\hat{S}_t$, $\Delta R_t$ and $-\Delta FFF_t$ are the same as in our baseline model and $\hat{F}_t$ is a $k \times 1$ vector of estimated real-economic factors. $u_{t,S}$ is the $m\times1$ vector of structural innovations in $\hat{S}_t$ and $u_{t,F}$ is $k \times 1$ vector of structural innovations in $\hat{F}_t$. $u_{t,FFF}$ and $u_{t,R}$ are the structural innovations in $-\Delta FFF_t$ and $\Delta R_t$, respectively. $A_f$ and $B_f$ are square coefficient matrices of dimension $k + m + 2$. Our transformed model will then be:
 \begin{align}
 	\begin{bmatrix}
 		\hat{S}_t\\
@@ -151,7 +158,7 @@ $\hat{S}_t$, $\Delta R_t$ and $-\Delta FFF_t$ are the same as in our baseline mo
 		u_{t,R}\\
 		u_{t,FFF}
 	\end{bmatrix} \nonumber \\
-	&= C_b\begin{bmatrix}
+	&= C_f\begin{bmatrix}
 		\hat{S}_{t-1}\\
 		\hat{F}_{t-1}\\
 		\Delta R_{t-1}\\
@@ -164,8 +171,11 @@ $\hat{S}_t$, $\Delta R_t$ and $-\Delta FFF_t$ are the same as in our baseline mo
 		v_{t,FFF}
 	\end{bmatrix} \label{eq:augmentedreduce}
 \end{align}
+Where $C_f = A_f^{-1}B_f$ and $v_{t,S}$, $v_{t,R}$, $v_{t,FFF}$ and $v_{t,F}$ are the transformed versions of $u_{t,S}$, $u_{t,R}$, $u_{t,FFF}$ and $u_{t,F}$, respectively. As with our baseline model, we are interested in both a Granger causality test of $\hat{S}$ on $-\Delta FFF$ and on the impulse response of $u_{t,S}$ on $-\Delta FFF$. We will us the Cholesky decomposition scheme as with our baseline model, where our statements will be fixed at the beginning of a period. For our estimated factors, we will use the same ordering as presented in Bernanke, Boivin and Eliasz (2005). Our interest here is to see whether or not the impact of $\hat{S}$ on $-\Delta FFF$ changes when our model contains information about the real economy. If this impact becomes statistically insignificant, then we can suggest that FOMC statements do not add additional information to the market. However, if the results remain significant, this will be evidence that the FOMC statements are able to inject information into the economy and alter market expectations.
 
-Where $C_f = A_f^{-1}B_f$ and $v_{t,S}$, $v_{t,R}$, $v_{t,FFF}$ and $v_{t,F}$ are the transformed versions of $u_{t,S}$, $u_{t,R}$, $u_{t,FFF}$ and $u_{t,F}$, respectively.
+\section{Expected Results}
+
+We have two specific expected results, one each from our two models. From the first model, we expect to show that a semantic representation of FOMC statements correlates with federal funds futures. We will show this with both a Granger causality test and impulse responses. Once this baseline has been established, we can use our factor-augmented model to test whether this correlation remains statistically significant when controlling for information from the real economy. This will allow us to answer our whether or not the FOMC is actually able to affect market expectations simply by issue a statement about future monetary policy. Beyond these two results, we also expect that we could provide an example of how the quickly advancing field of natural language processing can be used in economics.
 
 \clearpage
 
@@ -175,6 +185,11 @@ Where $C_f = A_f^{-1}B_f$ and $v_{t,S}$, $v_{t,R}$, $v_{t,FFF}$ and $v_{t,F}$ ar
 \nocite{mikolov2013efficient}
 \nocite{gunn2015news}
 \nocite{stock2016factor}
+\nocite{rehurek_lrec}
+\nocite{bernanke2005measuring}
+\nocite{romer1989does}
+\nocite{mccracken2016fred}
+\nocite{boschen1991effects}
 
 %\bibliography{references}
 
